@@ -29,7 +29,7 @@ public class Main {
             // timeZoneId = scZoneId.next();
         }
 
-        CityTimeRecognizer cityTimeRecognizer = new CityTimeRecognizer(cityName);
-        cityTimeRecognizer.cityMessage();
+        MessagesService messagesService = new MessagesService(cityName);
+        messagesService.cityMessage();
     }
 }

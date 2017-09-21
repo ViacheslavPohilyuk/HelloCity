@@ -19,18 +19,15 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 /**
  * Created by mac on 02.09.17.
  */
-public class CityTimeRecognizer {
+public class MessagesService {
 
     private String cityName;
 
-    public CityTimeRecognizer(String cityName) {
+    public MessagesService(String cityName) {
         this.cityName = cityName;
     }
 
     public void cityMessage() throws URISyntaxException {
-
-        System.out.println("Locale: " + Locale.getDefault());
-
         URIBuilder builder = new URIBuilder();
         builder.setScheme("http").setHost("maps.googleapis.com").setPath("/maps/api/geocode/json")
                 .setParameter("address", cityName)
