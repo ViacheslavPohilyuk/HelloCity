@@ -19,15 +19,29 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 /**
  * Created by mac on 02.09.17.
  */
-public class MessagesService {
+public class InternalizedMessagesService {
 
     private String cityName;
 
-    public MessagesService(String cityName) {
+    public InternalizedMessagesService(String cityName) {
         this.cityName = cityName;
     }
 
+    /**
+     * Appointment of this method is displaying a greeting message
+     * depending on the time of day in a city that user inputs.
+     *
+     * Time of day periods:
+     * Morning   6:00 - 9:00
+     * Afternoon 9:00 - 19:00
+     * Evening   19:00 - 23:00
+     * Night     23:00 - 6:00
+     */
     public void cityMessage() throws URISyntaxException {
+
+        /* Building the URI for Google api Geocode and
+         * send a Get request with this URI to recognize the
+         * location (latitude/longitude) of a city by its name */
         URIBuilder builder = new URIBuilder();
         builder.setScheme("http").setHost("maps.googleapis.com").setPath("/maps/api/geocode/json")
                 .setParameter("address", cityName)
@@ -42,8 +56,9 @@ public class MessagesService {
         Double latitude = location.getDouble("lat");
         Double longitude = location.getDouble("lng");
 
-        //----------------------------------------------------------------------------------------------
-
+        /* Building the URI for Google api Timezone and
+         * send a Get request with this URI to recognize the
+         * time zone of a city by its location */
         builder = new URIBuilder();
         builder.setScheme("https").setHost("maps.googleapis.com").setPath("/maps/api/timezone/json")
                 .setParameter("location", latitude + "," + longitude)
@@ -53,8 +68,8 @@ public class MessagesService {
         String cityTimeZoneId = new JSONObject(timeZoneJson)
                 .getString("timeZoneId");
 
-        //----------------------------------------------------------------------------------------------
-
+        /* Now we find out the current time in the above city by its time zone.
+         * And get time of the city in hours and minutes */
         LocalTime currentCityTime = LocalTime.now(ZoneId.of(cityTimeZoneId));
         currentCityTime = currentCityTime.truncatedTo(MINUTES);
 
@@ -62,6 +77,8 @@ public class MessagesService {
 
         double hourMinutes = currentCityTime.getHour() + currentCityTime.getMinute() / 60.0;
 
+        /* At this moment we know the current time in the city that's why
+         * we can choose appropriate greeting message */
         String greeting = "";
         if (hourMinutes >= 6 && hourMinutes <= 9)
             greeting = "morning";
@@ -72,6 +89,8 @@ public class MessagesService {
         else
             greeting = "night";
 
+        /* Now we check a locale of the user and we can
+         * get a right message from the resource bundle */
         Locale defaultLocale = Locale.getDefault();
         Locale USLocale = new Locale("en", "US");
 
@@ -81,6 +100,12 @@ public class MessagesService {
         System.out.println(messageBundle + ", " + cityName + "!");
     }
 
+    /**
+     * This method need to send GET http requests using library Apache HttpClient
+     *
+     * @param builder - this class represents the URI with separate parts like: scheme, host, path, parameters, etc.
+     * @return body of a response
+     */
     private String httpGetJsonByUrl(URIBuilder builder) throws URISyntaxException {
         HttpClient client = HttpClientBuilder.create().build();
         URI uri = builder.build();

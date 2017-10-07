@@ -29,7 +29,7 @@ public class Main {
             // timeZoneId = scZoneId.next();
         }
 
-        MessagesService messagesService = new MessagesService(cityName);
-        messagesService.cityMessage();
+        InternalizedMessagesService internalizedMessagesService = new InternalizedMessagesService(cityName);
+        internalizedMessagesService.cityMessage();
     }
 }
